@@ -18,7 +18,7 @@ class MatchRecord:
                  'seven': 7
                  }
 
-    def __init__(self, filename, player):
+    def __init__(self, filename, player=None):
         self.player = player
         with open(filename, 'rb') as f:
             self.match_log = f.read().decode(
@@ -27,18 +27,30 @@ class MatchRecord:
 
         # Keep those line in this order
         self.records = defaultdict(dict)
-        self.players = self._get_players()
+        try:
+            self.players = self._get_players()
+        except (IndexError, ValueError):
+            # There was a problem reading the player names
+            # or the match is not 1v1
+            self.records = None
+            return
+
         # Record players as {'player': 'player_name', 'opponent': 'opp_name}
         self.records['players'] = dict((v, k) for k, v in self.players.items())
         self._format_cards()
         self.records['cards_played'] = self.cards_played
         self._format_lines()
         self.games = self._get_games()
+        if len(self.games) < 2:
+            # If there are less than 2 games, it's not a complete match
+            self.records = None
+            return
+
         self.players_wins = {'player': 0,
                              'opponent': 0
                              }
         self.records['id_match'] = self._get_match_ID()
-        self.records['date'] = datetime.fromtimestamp(os.path.getctime(filename))
+        self.records['date'] = datetime.fromtimestamp(os.path.getmtime(filename))
 
         for i, game in enumerate(self.games):
             self.records[f'game_{i+1}']['on_play'] = self._get_on_play(game)
@@ -51,8 +63,12 @@ class MatchRecord:
 
         players = set(re.compile(
             '@P(\w+) rolled').findall(self.match_log))
-        players.discard(self.player)
-        self.opponent = list(players)[0]
+
+        if not self.player:
+            self.player, self.opponent = list(players)
+        else:
+            players.discard(self.player)
+            self.opponent = list(players)[0]
 
         players = dict()
         players[self.opponent] = 'opponent'
@@ -65,7 +81,7 @@ class MatchRecord:
         # The card names are formatted as @[Card Name@:numbers,numbers:@]
         # Game actions are @P(player_name) (casts|plays|discards|cycles|reveals) card_pattern
 
-        card_pattern = re.compile('@\[([a-zA-Z\s,-]+)@:[0-9,]+:@\]')
+        card_pattern = re.compile('@\[([a-zA-Z\s,\'-]+)@:[0-9,]+:@\]')
         players_cards_pattern = re.compile(
             '@P(\w+) (casts|plays|discards|cycles|reveals) (@\[([a-zA-Z\s,-]+)@:[0-9,]+:@\])'
         )
@@ -161,10 +177,23 @@ class MatchRecord:
             # instead of properly conceding.
             # In those cases, query the user to check the game log
             print('\n'.join(game[-8:]))
-            if yes_or_no('Did you win this game?'):
-                return 'player'
+            question = f"""Who won this game?
+            (1-{self.records['players']['player']})(2-{self.records['players']['opponent']})(3-draw)(4-unknown) """
+            answer = input(question).lower().strip()
+            print("")
+            while not(answer == "1" or answer == "2" or
+                    answer == "3" or answer == "4"):
+                print("Please see valid answers.")
+                answer = input(question).lower().strip()
+                print("")
+            if answer[0] == "1":
+                return self.records['players']['player']
+            elif answer[0] == "2":
+                return self.records['players']['opponent']
+            elif answer[0] == "3":
+                return 'draw'
             else:
-                return 'opponent'
+                return 'unknown'
 
     def _get_last_turn(self, game):
         turn_pattern = re.compile('Turn (\d+)')
@@ -173,22 +202,12 @@ class MatchRecord:
         for last_match in turn_pattern.finditer(' '.join(game)):
             pass
 
-        return last_match.group(1)
+        return int(last_match.group(1))
 
     def get_json(self):
+        if not self.records:
+            return None
         return json.dumps(self.records, default=str)
 
 
-def yes_or_no(question):
-    # Copied from https://gist.github.com/garrettdreyfus/8153571
-    answer = input(question + "(y/n): ").lower().strip()
-    print("")
-    while not(answer == "y" or answer == "yes" or
-    answer == "n" or answer == "no"):
-        print("Input yes or no")
-        answer = input(question + "(y/n):").lower().strip()
-        print("")
-    if answer[0] == "y":
-        return True
-    else:
-        return False
+
