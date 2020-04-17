@@ -52,11 +52,15 @@ class MatchRecord:
         self.records['id_match'] = self._get_match_ID()
         self.records['date'] = datetime.fromtimestamp(os.path.getmtime(filename))
 
+        self.records['games'] = list()
         for i, game in enumerate(self.games):
-            self.records[f'game_{i+1}']['on_play'] = self._get_on_play(game)
-            self.records[f'game_{i+1}']['starting_hands'] = self._get_starting_hands(game)
-            self.records[f'game_{i+1}']['winner'] = self._get_winner(game)
-            self.records[f'game_{i+1}']['last_turn'] = self._get_last_turn(game)
+            game_records = defaultdict(dict)
+            game_records['game_n'] = i+1
+            game_records['on_play'] = self._get_on_play(game)
+            game_records['starting_hands'] = self._get_starting_hands(game)
+            game_records['winner'] = self._get_winner(game)
+            game_records['last_turn'] = self._get_last_turn(game)
+            self.records['games'].append(game_records)
 
     def _get_players(self):
         # Find player names and set them as 'player' and 'opponent'.
@@ -187,9 +191,9 @@ class MatchRecord:
                 answer = input(question).lower().strip()
                 print("")
             if answer[0] == "1":
-                return self.records['players']['player']
+                return 'player'
             elif answer[0] == "2":
-                return self.records['players']['opponent']
+                return 'opponent'
             elif answer[0] == "3":
                 return 'draw'
             else:
