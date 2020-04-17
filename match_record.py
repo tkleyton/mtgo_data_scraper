@@ -5,18 +5,17 @@ from collections import defaultdict
 import json
 
 
-player = 'kley'
-numbers_dict = {'one': 1,
-                'two': 2,
-                'three': 3,
-                'four': 4,
-                'five': 5,
-                'six': 6,
-                'seven': 7
-                }
-
-
 class MatchRecord:
+    # TODO: find out what happens when a player mulls to zero.
+    NUMS_DICT = {'one': 1,
+                 'two': 2,
+                 'three': 3,
+                 'four': 4,
+                 'five': 5,
+                 'six': 6,
+                 'seven': 7
+                 }
+
     def __init__(self, filename, player):
         self.player = player
         with open(filename, 'rb') as f:
@@ -27,14 +26,16 @@ class MatchRecord:
         # Keep those line in this order
         self.records = defaultdict(dict)
         self.players = self._get_players()
+        # Record players as {'player': 'player_name', 'opponent': 'opp_name}
+        self.records['players'] = dict((v, k) for k, v in self.players.items())
         self._format_cards()
-        self.records['match']['cards_played'] = self.cards_played
+        self.records['cards_played'] = self.cards_played
         self._format_lines()
         self.games = self._get_games()
         self.players_wins = {'player': 0,
                              'opponent': 0
                              }
-        self.records['match']['match_ID'] = self._get_match_ID()
+        self.records['id_match'] = self._get_match_ID()
 
         for i, game in enumerate(self.games):
             self.records[f'game_{i+1}']['on_play'] = self._get_on_play(game)
@@ -127,7 +128,7 @@ class MatchRecord:
 
         starting_hands = dict(starting_hands)
         for k, v in starting_hands.items():
-            starting_hands[k] = numbers_dict[v]
+            starting_hands[k] = self.NUMS_DICT[v]
 
         return starting_hands
 
@@ -188,8 +189,3 @@ def yes_or_no(question):
         return True
     else:
         return False
-
-
-if __name__ == '__main__':
-    match = MatchRecord('match5.dat', player='kley')
-    print(match.get_json())
