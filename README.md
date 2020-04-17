@@ -1,5 +1,5 @@
-# mtgo_data_scrapper
-Read MTGO log files and scrap matches information.
+# MTGO log scrapper
+Read [MTGO (Magic: The Gathering Online)](https://magic.wizards.com/en/mtgo) log files and scrap matches information.
 
 **This is an ongoing project!**
 
@@ -36,3 +36,4 @@ Extracted information:
  - [ ] database integration instead of dumping to a file (MongoDB maybe?)
  - [ ] build deck archetypes database for automatic detection
  - [ ] improve data analysis and eventually deploy with Streamlit or Flask
+ - [ ] automatically find the logs folder
