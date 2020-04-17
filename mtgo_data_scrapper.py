@@ -40,6 +40,7 @@ class MatchRecord:
             self.records[f'game_{i+1}']['on_play'] = self._get_on_play(game)
             self.records[f'game_{i+1}']['starting_hands'] = self._get_starting_hands(game)
             self.records[f'game_{i+1}']['winner'] = self._get_winner(game)
+            self.records[f'game_{i+1}']['last_turn'] = self._get_last_turn(game)
 
     def _get_players(self):
         # Find player names and set them as 'player' and 'opponent'.
@@ -160,6 +161,15 @@ class MatchRecord:
                 return 'player'
             else:
                 return 'opponent'
+
+    def _get_last_turn(self, game):
+        turn_pattern = re.compile('Turn (\d+)')
+        # Iterating through finditer, only the last match is saved
+        # This might save some memory
+        for last_match in turn_pattern.finditer(' '.join(game)):
+            pass
+
+        return last_match.group(1)
 
     def get_json(self):
         return json.dumps(self.records)
