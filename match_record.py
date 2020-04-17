@@ -3,6 +3,8 @@
 import re
 from collections import defaultdict
 import json
+import os.path
+from datetime import datetime
 
 
 class MatchRecord:
@@ -36,6 +38,7 @@ class MatchRecord:
                              'opponent': 0
                              }
         self.records['id_match'] = self._get_match_ID()
+        self.records['date'] = datetime.fromtimestamp(os.path.getctime(filename))
 
         for i, game in enumerate(self.games):
             self.records[f'game_{i+1}']['on_play'] = self._get_on_play(game)
@@ -173,7 +176,7 @@ class MatchRecord:
         return last_match.group(1)
 
     def get_json(self):
-        return json.dumps(self.records)
+        return json.dumps(self.records, default=str)
 
 
 def yes_or_no(question):
