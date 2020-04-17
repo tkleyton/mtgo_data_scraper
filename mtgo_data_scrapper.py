@@ -26,13 +26,14 @@ class MatchRecord:
 
         self.format_cards()
         self.format_lines()
-        self.match_ID = self.get_match_ID()
         self.players = self.get_players()
         self.games = self.get_games()
         self.players_wins = {'player': 0,
                              'opponent': 0
                              }
         self.records = defaultdict(dict)
+        self.records['match']['match_ID'] = self.get_match_ID()
+        self.records['match']['cards_played'] = self.get_cards_played()
         for i, game in enumerate(self.games):
             self.records[f'game_{i+1}']['on_play'] = self.get_on_play(game)
             self.records[f'game_{i+1}']['starting_hands'] = self.get_starting_hands(game)
@@ -46,7 +47,7 @@ class MatchRecord:
 
     def get_cards_played(self):
         # Replace the weird card formatting with a simple Card Name
-        return self._cards_played
+        return list(self._cards_played)
 
     def format_lines(self):
         # Remove non-relevant characters
@@ -137,26 +138,33 @@ class MatchRecord:
         else:
             # Sometimes players just leave the match
             # instead of properly conceding.
-            # In those cases, maybe query the user to check the game log?
-            # raise AmbiguousResultError
-            return 'player'
+            # In those cases, query the user to check the game log
+            print('\n'.join(game[-8:]))
+            if yes_or_no('Did you win this game?'):
+                return 'player'
+            else:
+                return 'opponent'
 
     def get_json(self):
         return json.dumps(self.records)
 
 
-class IncompleteMatchError(Exception):
-    pass
-
-
-class AmbiguousResultError(Exception):
-    pass
+def yes_or_no(question):
+    # Copied from https://gist.github.com/garrettdreyfus/8153571
+    answer = input(question + "(y/n): ").lower().strip()
+    print("")
+    while not(answer == "y" or answer == "yes" or \
+    answer == "n" or answer == "no"):
+        print("Input yes or no")
+        answer = input(question + "(y/n):").lower().strip()
+        print("")
+    if answer[0] == "y":
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
-    match1 = MatchRecord('match1.dat', player='kley')
-    print(match1.get_json())
 
-    match2 = MatchRecord('match2.dat', player='kley')
-    print(match2.get_json())
-    print(match2.get_cards_played())
+    match4 = MatchRecord('match4.dat', player='kley')
+    print(match4.get_json())
