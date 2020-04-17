@@ -10,13 +10,13 @@ import argparse
 
 def main(path, player):
     file_list = [f for f in os.listdir(path) if f.endswith('.dat')]
-    records = defaultdict(dict)
+    records = list()
     for filename in file_list:
         match = MatchRecord(f'{path}/{filename}', player=player).get_json()
         if match:
             match = json.loads(match)
-            records[match['id_match']] = match
-
+            records.append(match)
+            
     with open(f'compiled_results_{player}.json', 'w') as output:
         output.write(json.dumps(records))
 
