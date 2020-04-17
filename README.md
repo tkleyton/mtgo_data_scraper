@@ -17,6 +17,19 @@ Extracted information:
   - how many cards each player started with
   - what was the last turn
   
+ ## How to use
+ - *Where can I find my matches?*
+ 
+ Wizards hides it very well. Navigate to
+ ```
+ "Users/<your_user>/Local Settings/Application Data/Apps/2.0/Data"
+ ```
+ and search for `Match_GameLog*.dat` files.
+ 
+ - *I want to do some analysis with pandas, but it's in JSON*
+ 
+ If converting everything to RDBMS formats makes this significantly better, then I'll do it. Until then, I've found that it's not too hard to [flatten those JSON files into pandas DataFrames.](https://www.kaggle.com/jboysen/quick-tutorial-flatten-nested-json-in-pandas)
+  
  ## To-do list
  - [ ] improve safety (catch more exceptions)
  - [ ] load previous data so it doesn't have to scrap everything everytime
