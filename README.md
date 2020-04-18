@@ -31,6 +31,7 @@ Extracted information:
  If converting everything to RDBMS formats makes this significantly better, then I'll do it. Until then, I've found that it's not too hard to [flatten those JSON files into pandas DataFrames.](https://www.kaggle.com/jboysen/quick-tutorial-flatten-nested-json-in-pandas)
   
  ## To-do list
+ - [ ] separate cards seen by game (so we can check key cards/cards correlation to wins)
  - [ ] improve safety (catch more exceptions)
  - [ ] load previous data so it doesn't have to scrap everything everytime
  - [ ] database integration instead of dumping to a file (MongoDB maybe?)
