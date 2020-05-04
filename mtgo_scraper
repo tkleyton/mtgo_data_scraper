@@ -22,7 +22,7 @@ def main(path, player):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog='mtgo_scrapper',
+    parser = argparse.ArgumentParser(prog='mtgo_scraper',
         description='''Read all mtgo logfiles from specified
         folder and compile the information into a json.''')
     parser.add_argument('--player', nargs='?', default=None)
