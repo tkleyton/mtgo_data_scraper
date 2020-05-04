@@ -1,11 +1,11 @@
 # MTGO log scrapper
-Read [MTGO (Magic: The Gathering Online)](https://magic.wizards.com/en/mtgo) log files and scrap matches information.
+Read [MTGO (Magic: The Gathering Online)](https://magic.wizards.com/en/mtgo) log files and scrape matches information.
 
 **This is an ongoing project!**
 
 ## Current status
 The module `match_record` can successfully read the Match_GameLog*.dat files, extract some information and dump as json for 1v1 matches.
-There are still rare cases which I didn't test. For instance, I don't what happens when a player mulligans to zero.
+There are still rare cases which I didn't test. For instance, I don't know what happens when a player mulligans to zero.
 
 Extracted information:
 - players' names
