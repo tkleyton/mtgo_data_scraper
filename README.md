@@ -1,4 +1,4 @@
-# MTGO log scrapper
+# MTGO log scraper
 Read [MTGO (Magic: The Gathering Online)](https://magic.wizards.com/en/mtgo) log files and scrape matches information.
 
 **This is an ongoing project!**
